@@ -1,0 +1,56 @@
+/* Tailwind CSS v4 entrypoint */
+@import "tailwindcss";
+
+/* direct colors badala ya @apply bg-light text-dark */
+body {
+  background-color: #F9FAFB; /* light color */
+  color: #1F2937; /* dark color */
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Simple design tokens to support existing custom class names */
+.bg-light {
+  background-color: #F3F4F6; /* gray-100 */
+}
+
+.text-secondary {
+  color: #10B981; /* emerald-500 */
+}
+
+.text-primary {
+  color: #2563EB; /* blue-600 */
+}
+
+.text-accent {
+  color: #F59E0B; /* amber-500 */
+}
+
+.border-primary {
+  border-color: #2563EB; /* blue-600 */
+}
+
+.border-secondary {
+  border-color: #10B981; /* emerald-500 */
+}
+
+.border-accent {
+  border-color: #F59E0B; /* amber-500 */
+}
+
+.bg-primary {
+  background-color: #2563EB; /* blue-600 */
+}
+
+.bg-secondary {
+  background-color: #059669; /* emerald-600 */
+}
+
+.bg-accent {
+  background-color: #FACC15; /* yellow-400 */
+}
+
+.text-dark {
+  color: #111827; /* gray-900 */
+}
