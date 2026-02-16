@@ -10,6 +10,8 @@ import Group from "@/models/Group";
 import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
     const url = new URL(req.url);
     const secret = url.searchParams.get("secret");

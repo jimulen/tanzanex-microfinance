@@ -3,6 +3,8 @@ import Organization from "@/models/Organization";
 import { getRole } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
     const role = getRole(req);
 
