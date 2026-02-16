@@ -6,6 +6,13 @@ import Navbar from "./components/Navbar";
 import LoansVsRepayment from "./charts/LoansVsRepayment";
 import { useLanguage } from "@/context/LanguageContext";
 
+interface DashboardMetrics {
+  totalBorrowers: number;
+  totalLoans: number;
+  totalRepayments: number;
+  totalExpenses: number;
+}
+
 export default function Dashboard() {
   const { t } = useLanguage();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
