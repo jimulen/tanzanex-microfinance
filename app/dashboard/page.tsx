@@ -11,6 +11,14 @@ interface DashboardMetrics {
   totalLoans: number;
   totalRepayments: number;
   totalExpenses: number;
+  activeLoans: number;
+  outstandingBalance: number;
+  totalRepaid: number;
+  operationalExpenses: number;
+  manualOutflows: number;
+  netProfit: number;
+  netCashFlow: number;
+  availableCash: number;
 }
 
 export default function Dashboard() {
