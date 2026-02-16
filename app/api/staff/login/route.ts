@@ -3,6 +3,8 @@ import Staff from "@/models/Staff";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+export const runtime = 'nodejs';
+
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 export async function POST(req: Request) {

@@ -4,6 +4,8 @@ import Repayment from "@/models/Payment";
 
 import { getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
   const orgId = getOrgId(req);
   if (!orgId) return Response.json({ message: "Unauthorized" }, { status: 401 });

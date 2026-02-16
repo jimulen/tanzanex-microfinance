@@ -5,6 +5,8 @@ import Repayment from "@/models/Payment";
 import { getRole, getOrgId } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 /* GET all cash flow transactions (Admin/Manager only) */
 export async function GET(req: Request) {
     const role = getRole(req);

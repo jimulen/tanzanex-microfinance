@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import { getOrgId } from "@/lib/auth";
 import { checkSubscription } from "@/lib/subscription";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
     try {
         await connectDB();

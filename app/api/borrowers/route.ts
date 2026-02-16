@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import Borrower from "@/models/Client";
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 /* GET all borrowers */
 export async function GET(req: Request) {
   const orgId = getOrgId(req);

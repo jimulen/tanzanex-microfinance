@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import Member from "@/models/Member";
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
   const orgId = getOrgId(req);
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

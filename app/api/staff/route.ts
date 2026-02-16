@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 export async function GET(req: Request) {
   const orgId = getOrgId(req);
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

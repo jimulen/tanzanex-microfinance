@@ -5,6 +5,8 @@ import "@/models/Client"; // Register Client schema
 import "@/models/Member"; // Register Member schema if needed for other routes
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 /* GET all loans */
 export async function GET(req: Request) {
   const orgId = getOrgId(req);

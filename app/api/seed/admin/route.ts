@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   await connectDB();
 

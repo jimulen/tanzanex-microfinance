@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import User from "@/models/User";
 import { connectDB } from "@/lib/db";
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   await connectDB();
 

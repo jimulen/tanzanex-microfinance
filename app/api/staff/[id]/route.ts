@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const role = getRole(req);
   const orgId = getOrgId(req);

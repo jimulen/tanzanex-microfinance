@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { getRole, getOrgId } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+
 export async function POST(req: Request) {
   const role = getRole(req);
   if (role !== "admin") {

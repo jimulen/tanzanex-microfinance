@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import Group from "@/models/Group";
 import { getRole, getOrgId } from "@/lib/auth";
 
+export const runtime = 'nodejs';
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }

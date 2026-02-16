@@ -10,6 +10,8 @@ import Member from "@/models/Member";
 import Client from "@/models/Client";
 import User from "@/models/User";
 
+export const runtime = 'nodejs';
+
 export async function POST(req: Request) {
     console.log("SYSTEM RESET REQUEST RECEIVED");
     const role = getRole(req);

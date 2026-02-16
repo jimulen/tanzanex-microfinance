@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/db";
 
+export const runtime = 'nodejs';
+
 // Optional helper GET so visiting /api/auth/login in the browser
 // returns a friendly message instead of a 405.
 export async function GET() {
