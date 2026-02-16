@@ -10,7 +10,12 @@ export default function AddRepaymentPage() {
   const [amount, setAmount] = useState("");
 
   useEffect(() => {
-    fetch("/api/loans", { cache: "no-store" })
+    fetch("/api/loans", {
+      cache: "no-store",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then(res => res.json())
       .then(setLoans);
   }, []);
@@ -20,6 +25,10 @@ export default function AddRepaymentPage() {
 
     await fetch("/api/repayments", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ loanId, amount: Number(amount) }),
     });
 

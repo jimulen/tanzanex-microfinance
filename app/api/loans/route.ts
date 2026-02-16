@@ -3,12 +3,16 @@ import { connectDB } from "@/lib/db";
 import Loan from "@/models/Loan";
 import "@/models/Client"; // Register Client schema
 import "@/models/Member"; // Register Member schema if needed for other routes
+import { getRole, getOrgId } from "@/lib/auth";
 
 /* GET all loans */
-export async function GET() {
+export async function GET(req: Request) {
+  const orgId = getOrgId(req);
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
   await connectDB();
 
-  const loans = await Loan.find()
+  const loans = await Loan.find({ organization: orgId })
     .populate("borrower") // borrower -> Client
     .sort({ createdAt: -1 });
 
@@ -17,6 +21,15 @@ export async function GET() {
 
 /* POST create loan */
 export async function POST(req: Request) {
+  const role = getRole(req);
+  const orgId = getOrgId(req);
+
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  if (!role || (role !== "admin" && role !== "manager" && role !== "staff" && role !== "officer")) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  }
+
   await connectDB();
   const body = await req.json();
 
@@ -46,6 +59,7 @@ export async function POST(req: Request) {
     paidAmount: 0,
     principalOutstanding: totalAmount,
     months,
+    organization: orgId,
   });
 
   return NextResponse.json(loan);

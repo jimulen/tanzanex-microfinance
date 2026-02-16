@@ -132,6 +132,11 @@ export default function LoginPage() {
           <p className="mt-8 text-center text-xs text-gray-400">
             &copy; {new Date().getFullYear()} Tanzanex Microfinance. All rights reserved.
           </p>
+          <div className="mt-4 text-center">
+            <Link href="/register" className="text-emerald-600 text-sm font-medium hover:underline">
+              Don't have an account? Start a free trial
+            </Link>
+          </div>
         </div>
       </div>
     </div>

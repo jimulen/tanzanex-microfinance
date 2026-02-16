@@ -8,8 +8,9 @@ export default function GroupsPage() {
   const [groupName, setGroupName] = useState("");
 
   const loadData = async () => {
-    const g = await fetch("/api/groups").then((r) => r.json());
-    const m = await fetch("/api/members").then((r) => r.json());
+    const headers = { "Authorization": `Bearer ${localStorage.getItem("token")}` };
+    const g = await fetch("/api/groups", { headers }).then((r) => r.json());
+    const m = await fetch("/api/members", { headers }).then((r) => r.json());
     setGroups(g);
     setMembers(m);
   };
@@ -21,7 +22,10 @@ export default function GroupsPage() {
   const createGroup = async () => {
     await fetch("/api/groups", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ name: groupName }),
     });
     setGroupName("");
@@ -31,7 +35,10 @@ export default function GroupsPage() {
   const addMember = async (groupId: string, memberId: string) => {
     await fetch(`/api/groups/${groupId}/members`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify({ memberId }),
     });
     loadData();

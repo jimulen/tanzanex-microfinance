@@ -10,6 +10,11 @@ const MemberSchema = new Schema(
       enum: ["active", "inactive"],
       default: "active",
     },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true,
+    },
   },
   { timestamps: true }
 );

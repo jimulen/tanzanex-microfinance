@@ -50,6 +50,11 @@ const LoanSchema = new mongoose.Schema(
       enum: ["pending", "approved", "paid"],
       default: "pending",
     },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true,
+    },
   },
   { timestamps: true }
 );

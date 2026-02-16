@@ -27,7 +27,10 @@ export default function AddStaffModal({ isOpen, onClose, onAdded }: AddStaffModa
         try {
             const res = await fetch("/api/staff", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
                 body: JSON.stringify(form),
             });
 

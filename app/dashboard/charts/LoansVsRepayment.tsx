@@ -22,7 +22,11 @@ export default function LoansVsRepayment() {
   const [data, setData] = useState<ChartData[]>([]);
 
   const fetchData = async () => {
-    const res = await fetch("/api/dashboard/loans-repayments");
+    const res = await fetch("/api/dashboard/loans-repayments", {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    });
     if (res.ok) {
       const json = await res.json();
       setData(json);

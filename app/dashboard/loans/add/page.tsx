@@ -15,7 +15,12 @@ export default function AddLoanPage() {
   });
 
   useEffect(() => {
-    fetch("/api/borrowers", { cache: "no-store" })
+    fetch("/api/borrowers", {
+      cache: "no-store",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then(res => res.json())
       .then(setBorrowers);
   }, []);
@@ -25,7 +30,10 @@ export default function AddLoanPage() {
 
     const res = await fetch("/api/loans", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       body: JSON.stringify(form),
     });
 

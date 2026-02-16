@@ -10,6 +10,11 @@ const GroupSchema = new Schema(
         ref: "Member", // 👈 MUST MATCH model name EXACTLY
       },
     ],
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true,
+    },
   },
   { timestamps: true }
 );

@@ -2,15 +2,28 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { getRole, getOrgId } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const orgId = getOrgId(req);
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
   await connectDB();
-  // Fetch only staff/admin roles if needed, or all users for now
-  const staff = await User.find({}).select("-password").sort({ createdAt: -1 });
+  // Fetch only staff/admin roles for the organization
+  const staff = await User.find({ organization: orgId }).select("-password").sort({ createdAt: -1 });
   return NextResponse.json(staff);
 }
 
 export async function POST(req: Request) {
+  const role = getRole(req);
+  const orgId = getOrgId(req);
+
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  if (role !== "admin") {
+    return NextResponse.json({ message: "Unauthorized: Admins only" }, { status: 403 });
+  }
+
   await connectDB();
 
   try {
@@ -38,7 +51,8 @@ export async function POST(req: Request) {
       email,
       password: hashedPassword,
       role,
-      active: true, // Specific field to control login access
+      organization: orgId,
+      active: true,
     });
 
     return NextResponse.json(newUser, { status: 201 });

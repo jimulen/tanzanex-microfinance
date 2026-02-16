@@ -1,5 +1,6 @@
 "use client";
 import Sidebar from "./components/Sidebar";
+import SubscriptionExpired from "./components/SubscriptionExpired";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { useRouter } from "next/navigation";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
+  const [subscription, setSubscription] = useState<{ isLocked: boolean; reason?: string } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -14,6 +16,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       router.push("/login");
     } else {
       setAuthorized(true);
+      // Check subscription status
+      fetch("/api/subscription/status", {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => setSubscription(data))
+        .catch(() => setSubscription({ isLocked: false })); // Default to not locked if api fails (or handle error)
     }
   }, [router]);
 
@@ -25,10 +34,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  if (subscription?.isLocked) {
+    return <SubscriptionExpired reason={subscription.reason || ""} />;
+  }
+
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Sidebar />
-      <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
 }

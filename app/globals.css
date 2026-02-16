@@ -1,56 +1,208 @@
-/* Tailwind CSS v4 entrypoint */
 @import "tailwindcss";
 
 /* direct colors badala ya @apply bg-light text-dark */
 body {
-  background-color: #F9FAFB; /* light color */
-  color: #1F2937; /* dark color */
+  background-color: #F9FAFB;
+  color: #1F2937;
   font-family: sans-serif;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Simple design tokens to support existing custom class names */
+.dark body {
+  background-color: #0f172a;
+  /* Substantial dark slate background */
+  color: #f8fafc;
+}
+
+/* Base Classes Overrides */
 .bg-light {
-  background-color: #F3F4F6; /* gray-100 */
+  background-color: #F3F4F6;
 }
 
+.dark .bg-light {
+  background-color: #1e293b;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.dark .bg-white {
+  background-color: #1e293b;
+}
+
+/* Gray Background Overrides */
+.bg-gray-50 {
+  background-color: #F9FAFB;
+}
+
+.dark .bg-gray-50 {
+  background-color: #0f172a;
+}
+
+.bg-gray-100 {
+  background-color: #F3F4F6;
+}
+
+.dark .bg-gray-100 {
+  background-color: #1e293b;
+}
+
+.bg-gray-200 {
+  background-color: #E5E7EB;
+}
+
+.dark .bg-gray-200 {
+  background-color: #334155;
+}
+
+/* Gray Text Overrides - Ensuring high contrast */
+.text-gray-900 {
+  color: #111827;
+}
+
+.dark .text-gray-900 {
+  color: #f8fafc;
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.dark .text-gray-800 {
+  color: #f1f5f9;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.dark .text-gray-700 {
+  color: #e2e8f0;
+}
+
+.text-gray-600 {
+  color: #4b5563;
+}
+
+.dark .text-gray-600 {
+  color: #cbd5e1;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.dark .text-gray-500 {
+  color: #94a3b8;
+}
+
+.text-gray-400 {
+  color: #9CA3AF;
+}
+
+.dark .text-gray-400 {
+  color: #64748b;
+}
+
+/* Border Overrides */
+.border-gray-100 {
+  border-color: #F3F4F6;
+}
+
+.dark .border-gray-100 {
+  border-color: #1e293b;
+}
+
+.border-gray-200 {
+  border-color: #E5E7EB;
+}
+
+.dark .border-gray-200 {
+  border-color: #334155;
+}
+
+/* Primary/Secondary/Accent refined for Dark mode contrast */
 .text-secondary {
-  color: #10B981; /* emerald-500 */
+  color: #10B981;
+}
+
+.dark .text-secondary {
+  color: #34d399;
 }
 
 .text-primary {
-  color: #2563EB; /* blue-600 */
+  color: #2563EB;
+}
+
+.dark .text-primary {
+  color: #60a5fa;
 }
 
 .text-accent {
-  color: #F59E0B; /* amber-500 */
+  color: #F59E0B;
+}
+
+.dark .text-accent {
+  color: #fbbf24;
 }
 
 .border-primary {
-  border-color: #2563EB; /* blue-600 */
+  border-color: #2563EB;
+}
+
+.dark .border-primary {
+  border-color: #3b82f6;
 }
 
 .border-secondary {
-  border-color: #10B981; /* emerald-500 */
+  border-color: #10B981;
 }
 
-.border-accent {
-  border-color: #F59E0B; /* amber-500 */
+.dark .border-secondary {
+  border-color: #059669;
 }
 
 .bg-primary {
-  background-color: #2563EB; /* blue-600 */
+  background-color: #2563EB;
 }
 
 .bg-secondary {
-  background-color: #059669; /* emerald-600 */
+  background-color: #059669;
 }
 
 .bg-accent {
-  background-color: #FACC15; /* yellow-400 */
+  background-color: #FACC15;
 }
 
 .text-dark {
-  color: #111827; /* gray-900 */
+  color: #111827;
+}
+
+.dark .text-dark {
+  color: #f9fafb;
+}
+
+/* Tables and Inputs specific visibility */
+.dark table thead {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+
+.dark table tbody tr:hover {
+  background-color: #334155;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.dark .shadow-sm {
+  shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
 }

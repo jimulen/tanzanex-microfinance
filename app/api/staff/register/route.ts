@@ -1,23 +1,36 @@
 import { connectDB } from "@/lib/db";
-import Staff from "@/models/Staff";
+import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import { getRole, getOrgId } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const role = getRole(req);
+  if (role !== "admin") {
+    return NextResponse.json({ message: "Unauthorized: Admins only" }, { status: 403 });
+  }
+
   await connectDB();
 
-  const { fullName, email, password, role } = await req.json();
+  const { fullName, email, password, role: staffRole } = await req.json();
+  const orgId = getOrgId(req);
 
-  const existing = await Staff.findOne({ email });
-  if (existing) return new Response("Staff already exists", { status: 400 });
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  const existing = await User.findOne({ email });
+  if (existing) {
+    return NextResponse.json({ message: "User already exists" }, { status: 400 });
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const staff = await Staff.create({
-    fullName,
+  const user = await User.create({
+    name: fullName,
     email,
     password: hashedPassword,
-    role,
+    role: staffRole,
+    organization: orgId,
   });
 
-  return new Response(JSON.stringify({ message: "Staff created", staff }), { status: 201 });
+  return NextResponse.json({ message: "Staff created", user }, { status: 201 });
 }

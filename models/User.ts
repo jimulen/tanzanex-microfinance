@@ -6,8 +6,17 @@ const UserSchema = new mongoose.Schema({
   password: String,
   role: {
     type: String,
-    enum: ["admin", "officer", "staff", "manager"],
+    enum: ["admin", "officer", "staff", "manager", "super-admin"],
     default: "staff",
+  },
+  organization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organization",
+    required: true,
+  },
+  isOwner: {
+    type: Boolean,
+    default: false,
   },
   active: {
     type: Boolean,

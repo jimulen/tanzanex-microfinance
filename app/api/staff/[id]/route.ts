@@ -2,8 +2,18 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { getRole, getOrgId } from "@/lib/auth";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const role = getRole(req);
+  const orgId = getOrgId(req);
+
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  if (role !== "admin") {
+    return NextResponse.json({ message: "Unauthorized: Admins only" }, { status: 403 });
+  }
+
   await connectDB();
   const { id } = await params;
 
@@ -11,9 +21,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const body = await req.json();
     const { name, role, active, password } = body;
 
-    const user = await User.findById(id);
+    const user = await User.findOne({ _id: id, organization: orgId });
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: "User not found or unauthorized" }, { status: 404 });
     }
 
     if (name) user.name = name;
@@ -36,13 +46,22 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const role = getRole(req);
+  const orgId = getOrgId(req);
+
+  if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  if (role !== "admin") {
+    return NextResponse.json({ message: "Unauthorized: Admins only" }, { status: 403 });
+  }
+
   await connectDB();
   const { id } = await params;
 
   try {
-    const deleted = await User.findByIdAndDelete(id);
+    const deleted = await User.findOneAndDelete({ _id: id, organization: orgId });
     if (!deleted) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ message: "User not found or unauthorized" }, { status: 404 });
     }
 
     return NextResponse.json({ message: "User deleted successfully" });

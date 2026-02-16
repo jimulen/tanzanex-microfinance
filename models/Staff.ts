@@ -10,6 +10,11 @@ const StaffSchema = new Schema(
       enum: ["staff", "manager", "admin"],
       default: "staff",
     },
+    organization: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organization",
+      required: true,
+    },
   },
   { timestamps: true }
 );

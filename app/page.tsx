@@ -7,12 +7,20 @@ export default function Home() {
       <nav className="bg-emerald-900 text-white py-4 px-6 shadow-md">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold tracking-wide">TANZANEX MICROFINANCE SYSTEM</div>
-          <Link
-            href="/login"
-            className="bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2 rounded-lg font-medium transition-colors"
-          >
-            Login
-          </Link>
+          <div className="flex gap-4">
+            <Link
+              href="/register"
+              className="text-emerald-100 hover:text-white px-5 py-2 font-medium transition-colors"
+            >
+              Start Trial
+            </Link>
+            <Link
+              href="/login"
+              className="bg-emerald-500 hover:bg-emerald-400 text-white px-5 py-2 rounded-lg font-medium transition-colors"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -28,10 +36,16 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-4">
             <Link
+              href="/register"
+              className="bg-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-emerald-400 transition-transform transform hover:-translate-y-1"
+            >
+              Get Started (7-Day Free Trial)
+            </Link>
+            <Link
               href="/login"
               className="bg-white text-emerald-900 px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-emerald-50 transition-transform transform hover:-translate-y-1"
             >
-              Access Portal
+              Login to Workspace
             </Link>
           </div>
         </div>

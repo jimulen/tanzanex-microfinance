@@ -17,7 +17,10 @@ export default function AddBorrowerPage() {
 
     const res = await fetch("/api/borrowers", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
       // also send `name` for compatibility with any legacy code
       body: JSON.stringify({ ...form, name: form.fullName }),
     });

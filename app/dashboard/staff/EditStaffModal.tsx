@@ -40,7 +40,10 @@ export default function EditStaffModal({ isOpen, onClose, onUpdated, staff }: Ed
 
             const res = await fetch(`/api/staff/${staff._id}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
                 body: JSON.stringify(payload),
             });
 
