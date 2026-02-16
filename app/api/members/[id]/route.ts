@@ -5,10 +5,11 @@ import { getRole, getOrgId } from "@/lib/auth";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const role = getRole(req);
   const orgId = getOrgId(req);
+  const { id } = await params;
 
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -19,7 +20,7 @@ export async function PUT(
   await connectDB();
   const data = await req.json();
 
-  const member = await Member.findOneAndUpdate({ _id: params.id, organization: orgId }, data, {
+  const member = await Member.findOneAndUpdate({ _id: id, organization: orgId }, data, {
     new: true,
   });
 
@@ -32,10 +33,11 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const role = getRole(req);
   const orgId = getOrgId(req);
+  const { id } = await params;
 
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -44,7 +46,7 @@ export async function DELETE(
   }
 
   await connectDB();
-  const deleted = await Member.findOneAndDelete({ _id: params.id, organization: orgId });
+  const deleted = await Member.findOneAndDelete({ _id: id, organization: orgId });
   if (!deleted) {
     return NextResponse.json({ message: "Member not found or unauthorized" }, { status: 404 });
   }

@@ -5,10 +5,11 @@ import { getRole, getOrgId } from "@/lib/auth";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const role = getRole(req);
   const orgId = getOrgId(req);
+  const { id } = await params;
 
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -20,7 +21,7 @@ export async function POST(
   const { memberId } = await req.json();
 
   const group = await Group.findOneAndUpdate(
-    { _id: params.id, organization: orgId },
+    { _id: id, organization: orgId },
     { $addToSet: { members: memberId } },
     { new: true }
   ).populate("members");
@@ -34,10 +35,11 @@ export async function POST(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const role = getRole(req);
   const orgId = getOrgId(req);
+  const { id } = await params;
 
   if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
@@ -49,7 +51,7 @@ export async function DELETE(
   const { memberId } = await req.json();
 
   const group = await Group.findOneAndUpdate(
-    { _id: params.id, organization: orgId },
+    { _id: id, organization: orgId },
     { $pull: { members: memberId } },
     { new: true }
   ).populate("members");
