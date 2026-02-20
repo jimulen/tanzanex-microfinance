@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import TodayTransactions from "./components/TodayTransactions";
+import AgingAnalysis from "./components/AgingAnalysis";
 import LoansVsRepayment from "./charts/LoansVsRepayment";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -170,10 +171,13 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* Today's Transactions + quick links */}
+        {/* Today's Transactions + Aging Analysis */}
         <section className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <TodayTransactions />
+            <div className="space-y-6">
+              <TodayTransactions />
+              <AgingAnalysis />
+            </div>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
@@ -205,7 +209,7 @@ export default function Dashboard() {
               </Link>
               <Link
                 href="/dashboard/loans"
-                className="inline-flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 hover:bg-gray-50"
+                className="inline-flex items-center justify-between rounded-lg border-gray-200 px-3 py-2 hover:bg-gray-50"
               >
                 <span>{t("viewOverdue")}</span>
               </Link>
