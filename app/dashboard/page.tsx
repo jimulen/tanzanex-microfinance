@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "./components/Navbar";
+import TodayTransactions from "./components/TodayTransactions";
 import LoansVsRepayment from "./charts/LoansVsRepayment";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -169,10 +170,10 @@ export default function Dashboard() {
           </section>
         )}
 
-        {/* Chart + quick links */}
+        {/* Today's Transactions + quick links */}
         <section className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <LoansVsRepayment />
+            <TodayTransactions />
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
