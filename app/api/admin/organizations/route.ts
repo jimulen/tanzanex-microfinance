@@ -22,7 +22,20 @@ export async function GET(req: Request) {
     await connectDB();
 
     try {
-        const organizations = await Organization.find().sort({ createdAt: -1 });
+        const url = new URL(req.url);
+        const includeArchived = url.searchParams.get("includeArchived");
+        
+        let organizations;
+        if (includeArchived === "true") {
+            // Fetch all organizations including archived ones
+            organizations = await Organization.find().sort({ createdAt: -1 });
+        } else {
+            // Fetch only active organizations (exclude archived)
+            organizations = await Organization.find({ 
+                subscriptionStatus: { $ne: "archived" }
+            }).sort({ createdAt: -1 });
+        }
+        
         return NextResponse.json(organizations);
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
