@@ -62,7 +62,7 @@ export default function ReportsPage() {
         }
     }, [activeReport, reportPeriod, reportYear, reportMonth]);
 
-    const fetchReportData = async () => {
+    const fetchReportData = async (shouldPrint = false) => {
         const token = localStorage.getItem("token");
         if (!token) {
             console.error("No token found");
@@ -93,10 +93,12 @@ export default function ReportsPage() {
                 console.log("Report data received:", data); // Debug log
                 setReportData(data);
                 
-                // Auto-print after data is loaded
-                setTimeout(() => {
-                    window.print();
-                }, 500);
+                // Only print if explicitly requested
+                if (shouldPrint) {
+                    setTimeout(() => {
+                        window.print();
+                    }, 500);
+                }
             } else {
                 console.error("Report API error:", response.status);
                 setError(`Report API error: ${response.statusText}`);
@@ -212,7 +214,7 @@ export default function ReportsPage() {
                             )}
                             <div>
                                 <button
-                                    onClick={fetchReportData}
+                                    onClick={() => fetchReportData(true)}
                                     disabled={loading}
                                     className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
                                 >
