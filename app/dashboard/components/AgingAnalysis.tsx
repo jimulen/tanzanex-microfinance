@@ -43,12 +43,22 @@ export default function AgingAnalysis() {
 
   useEffect(() => {
     fetchAgingData();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchAgingData();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchAgingData = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) return;
+      
       const response = await fetch("/api/dashboard/aging", {
+        cache: "no-store",
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -56,7 +66,8 @@ export default function AgingAnalysis() {
       
       if (response.ok) {
         const data = await response.json();
-        setAgingData(data.aging);
+        console.log("Aging data updated:", data); // Debug log
+        setAgingData(data.agingReport);
         setExpectedCollections(data.expectedCollections);
       }
     } catch (error) {

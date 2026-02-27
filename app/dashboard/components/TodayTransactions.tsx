@@ -28,12 +28,22 @@ export default function TodayTransactions() {
 
   useEffect(() => {
     fetchTodayTransactions();
+    
+    // Add periodic refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchTodayTransactions();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchTodayTransactions = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) return;
+      
       const response = await fetch("/api/dashboard/today-transactions", {
+        cache: "no-store",
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -41,6 +51,7 @@ export default function TodayTransactions() {
       
       if (response.ok) {
         const data = await response.json();
+        console.log("Today's transactions data:", data); // Debug log
         setTransactions(data.transactions);
         setSummary(data.summary);
       }

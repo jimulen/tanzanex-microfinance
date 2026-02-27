@@ -104,24 +104,35 @@ export async function GET(req: Request) {
         // Sort expected collections by amount (largest first)
         expectedCollections.sort((a, b) => b.expectedAmount - a.expectedAmount);
 
+        const agingData = {
+            nearDeadline: agingReport.filter(a => a.status === 'near_deadline'),
+            overdue: agingReport.filter(a => a.status === 'overdue'),
+            severelyOverdue: agingReport.filter(a => a.status === 'severely_overdue'),
+            total: agingReport.length,
+            totalAmount: agingReport.reduce((sum, a) => sum + a.amountDue, 0)
+        };
+
+        const expectedData = {
+            today: expectedCollections.filter(c => {
+                const collectionDate = new Date(c.nextPaymentDate);
+                return collectionDate.toDateString() === today.toDateString();
+            }),
+            upcoming: expectedCollections.filter(c => {
+                const collectionDate = new Date(c.nextPaymentDate);
+                return collectionDate > today;
+            }),
+            totalExpected: expectedCollections.reduce((sum, c) => sum + c.expectedAmount, 0)
+        };
+
         return NextResponse.json({
-            aging: {
-                nearDeadline: agingReport.filter(a => a.status === 'near_deadline'),
-                overdue: agingReport.filter(a => a.status === 'overdue'),
-                severelyOverdue: agingReport.filter(a => a.status === 'severely_overdue'),
-                total: agingReport.length,
-                totalAmount: agingReport.reduce((sum, a) => sum + a.amountDue, 0)
-            },
-            expectedCollections: {
-                today: expectedCollections.filter(c => {
-                    const collectionDate = new Date(c.nextPaymentDate);
-                    return collectionDate.toDateString() === today.toDateString();
-                }),
-                upcoming: expectedCollections.filter(c => {
-                    const collectionDate = new Date(c.nextPaymentDate);
-                    return collectionDate > today;
-                }),
-                totalExpected: expectedCollections.reduce((sum, c) => sum + c.expectedAmount, 0)
+            agingReport: agingData,
+            expectedCollections: expectedData
+        }, {
+            // Add cache control headers to prevent stale data
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, s-maxage=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
             }
         });
     } catch (error: any) {

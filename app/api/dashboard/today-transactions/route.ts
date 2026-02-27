@@ -13,7 +13,6 @@ export async function GET(req: Request) {
     const orgId = getOrgId(req);
 
     if (!orgId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
     if (!role) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
@@ -87,6 +86,13 @@ export async function GET(req: Request) {
                 outflows: todayOutflows,
                 net: todayNet,
                 count: todayTransactions.length
+            }
+        }, {
+            // Add cache control headers to prevent stale data
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, s-maxage=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
             }
         });
     } catch (error: any) {

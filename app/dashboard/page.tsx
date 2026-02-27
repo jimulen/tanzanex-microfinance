@@ -9,18 +9,21 @@ import LoansVsRepayment from "./charts/LoansVsRepayment";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface DashboardMetrics {
-  totalBorrowers: number;
-  totalLoans: number;
-  totalRepayments: number;
-  totalExpenses: number;
-  activeLoans: number;
-  outstandingBalance: number;
-  totalRepaid: number;
+  todayLoans: number;
+  todayActiveLoans: number;
+  todayLoanAmount: number;
+  todayRepaid: number;
+  todayExpenses: number;
   operationalExpenses: number;
   manualOutflows: number;
-  netProfit: number;
-  netCashFlow: number;
-  availableCash: number;
+  todayNetProfit: number;
+  todayInflow: number;
+  todayOutflow: number;
+  todayNetCashFlow: number;
+  todayAvailableCash: number;
+  totalLoans: number;
+  totalActiveLoans: number;
+  totalOutstandingBalance: number;
 }
 
 export default function Dashboard() {
@@ -31,24 +34,39 @@ export default function Dashboard() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("/api/dashboard/metrics", {
-      cache: "no-store",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    })
-      .then((res) => res.json())
-      .then((data) => setMetrics(data))
-      .catch(() => setMetrics(null));
+    const fetchMetrics = () => {
+      if (!token) return;
+      
+      fetch("/api/dashboard/metrics", {
+        cache: "no-store",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Dashboard metrics updated:", data); // Debug log
+          setMetrics(data);
+        })
+        .catch(() => setMetrics(null));
+    };
+
+    // Initial fetch
+    fetchMetrics();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchMetrics, 30000);
+    
+    return () => clearInterval(interval);
 
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = JSON.parse(atob(token!.split('.')[1]));
         if (payload && payload.role) {
           setRole(payload.role);
         }
       } catch (error) {
-        console.error("Failed to decode token", error);
+        console.error("Token parsing error:", error);
       }
     }
   }, []);
@@ -71,105 +89,127 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* Loan / portfolio KPIs */}
+        {/* Today's Loan / portfolio KPIs */}
         <section className="grid gap-6 md:grid-cols-3">
           <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-primary">
-            <h3 className="text-gray-500">{t("totalLoans")}</h3>
+            <h3 className="text-gray-500">Today's Loans</h3>
             <p className="mt-2 text-2xl font-bold text-primary">
-              {metrics?.totalLoans ?? 0}
+              {metrics?.todayLoans ?? 0}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              {t("allLoansCreated")}
+              Loans created today
             </p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-secondary">
-            <h3 className="text-gray-500">{t("activeLoans")}</h3>
+            <h3 className="text-gray-500">Today's Active Loans</h3>
             <p className="mt-2 text-2xl font-bold text-secondary">
-              {metrics?.activeLoans ?? 0}
+              {metrics?.todayActiveLoans ?? 0}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              {t("loansNotPaid")}
+              Active loans created today
             </p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-accent">
-            <h3 className="text-gray-500">{t("outstandingBalance")}</h3>
+            <h3 className="text-gray-500">Today's Loan Amount</h3>
             <p className="mt-2 text-2xl font-bold text-accent">
-              {formatMoney(metrics?.outstandingBalance ?? 0)}
+              {formatMoney(metrics?.todayLoanAmount ?? 0)}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              {t("principalToCollect")}
+              Total amount loaned today
             </p>
           </div>
         </section>
 
-        {/* Financial KPIs */}
+        {/* Today's Financial KPIs */}
         <section className="grid gap-6 md:grid-cols-3">
           <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-primary">
-            <h3 className="text-gray-500">{t("totalRepaid")}</h3>
+            <h3 className="text-gray-500">Today's Repayments</h3>
             <p className="mt-2 text-2xl font-bold text-primary">
-              {formatMoney(metrics?.totalRepaid ?? 0)}
+              {formatMoney(metrics?.todayRepaid ?? 0)}
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              {t("sumRepayments")}
+              Amount repaid today
             </p>
           </div>
 
           {!isRestricted && (
             <>
               <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-red-500">
-                <h3 className="text-gray-500">{t("totalOutflows") || "Total Outflows"}</h3>
+                <h3 className="text-gray-500">Today's Outflows</h3>
                 <p className="mt-2 text-2xl font-bold text-red-500">
-                  {formatMoney(metrics?.totalExpenses ?? 0)}
+                  {formatMoney(metrics?.todayExpenses ?? 0)}
                 </p>
                 <div className="mt-1 flex flex-col gap-0.5">
                   <p className="text-[10px] text-gray-400 leading-tight">
-                    {t("operationalCosts")}: {formatMoney(metrics?.operationalExpenses || 0)}
+                    Operational: {formatMoney(metrics?.operationalExpenses || 0)}
                   </p>
                   <p className="text-[10px] text-gray-400 leading-tight">
-                    {t("manualOutflows") || "Manual Outflows"}: {formatMoney(metrics?.manualOutflows || 0)}
+                    Manual: {formatMoney(metrics?.manualOutflows || 0)}
                   </p>
                 </div>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-600">
-                <h3 className="text-gray-500">{t("netProfit")}</h3>
+                <h3 className="text-gray-500">Today's Net Profit</h3>
                 <p className="mt-2 text-2xl font-bold text-green-600">
-                  {formatMoney(metrics?.netProfit ?? 0)}
+                  {formatMoney(metrics?.todayNetProfit ?? 0)}
                 </p>
                 <p className="mt-1 text-xs text-gray-400">
-                  {t("profitCalculation")}
+                  Today's profit (repayments - expenses)
                 </p>
               </div>
             </>
           )}
         </section>
 
-        {/* Cash Flow / Capital Section */}
+        {/* Today's Cash Flow / Capital Section */}
         {!isRestricted && (
           <section className="grid gap-6 md:grid-cols-3">
             <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
-              <h3 className="text-gray-500">{t("netCapital")}</h3>
+              <h3 className="text-gray-500">Today's Net Cash Flow</h3>
               <p className="mt-2 text-2xl font-bold text-blue-500">
-                {formatMoney(metrics?.netCashFlow ?? 0)}
+                {formatMoney(metrics?.todayNetCashFlow ?? 0)}
               </p>
               <p className="mt-1 text-xs text-gray-400">
-                {t("capitalCalculation")}
+                Manual inflows - outflows today
               </p>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm p-4 border-l-4 border-orange-500 md:col-span-2">
-              <h3 className="text-gray-500">{t("availableLiquidity")}</h3>
+              <h3 className="text-gray-500">Today's Available Cash</h3>
               <p className="mt-2 text-2xl font-bold text-orange-500">
-                {formatMoney(metrics?.availableCash ?? 0)}
+                {formatMoney(metrics?.todayAvailableCash ?? 0)}
               </p>
               <p className="mt-1 text-xs text-gray-400">
-                {t("liquidityCalculation")}
+                Today's net cash flow + net profit
               </p>
             </div>
           </section>
         )}
+
+        {/* Overall Summary (smaller cards) */}
+        <section className="grid gap-4 md:grid-cols-3">
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <h4 className="text-xs text-gray-600">Total Loans</h4>
+            <p className="text-lg font-semibold text-gray-800">
+              {metrics?.totalLoans ?? 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <h4 className="text-xs text-gray-600">Total Active</h4>
+            <p className="text-lg font-semibold text-gray-800">
+              {metrics?.totalActiveLoans ?? 0}
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <h4 className="text-xs text-gray-600">Total Outstanding</h4>
+            <p className="text-lg font-semibold text-gray-800">
+              {formatMoney(metrics?.totalOutstandingBalance ?? 0)}
+            </p>
+          </div>
+        </section>
 
         {/* Today's Transactions + Aging Analysis */}
         <section className="grid gap-6 lg:grid-cols-3">

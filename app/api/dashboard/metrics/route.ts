@@ -15,67 +15,94 @@ export async function GET(req: Request) {
 
   await connectDB();
 
-  const loans = await Loan.find({ organization: orgId });
-  const repayments = await Repayment.find({ organization: orgId });
-  const expenses = await Expense.find({ organization: orgId });
-  const cashflows = await CashFlow.find({ organization: orgId });
+  // Get today's date range
+  const today = new Date();
+  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-  const totalLoans = loans.length;
-  const activeLoans = loans.filter(
+  // Fetch today's data
+  const todayLoans = await Loan.find({ 
+    organization: orgId,
+    createdAt: { $gte: startOfDay, $lt: endOfDay }
+  });
+  
+  const todayRepayments = await Repayment.find({ 
+    organization: orgId,
+    paidAt: { $gte: startOfDay, $lt: endOfDay }
+  });
+  
+  const todayExpenses = await Expense.find({ 
+    organization: orgId,
+    expenseDate: { $gte: startOfDay, $lt: endOfDay }
+  });
+  
+  const todayCashflows = await CashFlow.find({ 
+    organization: orgId,
+    date: { $gte: startOfDay, $lt: endOfDay }
+  });
+
+  // Today's metrics
+  const todayLoansCount = todayLoans.length;
+  const todayActiveLoans = todayLoans.filter(
     (loan: any) => loan.status !== "paid"
   ).length;
 
-  const totalLoanPrincipal = loans.reduce(
+  const todayLoanAmount = todayLoans.reduce(
     (sum: number, loan: any) => sum + (Number(loan.amountLoaned) || 0),
     0
   );
 
-  const totalRepaid = repayments.reduce(
+  const todayRepaid = todayRepayments.reduce(
     (sum: number, r: any) => sum + (Number(r.amountPaid) || 0),
     0
   );
 
-  const outstandingBalance = totalLoanPrincipal - totalRepaid;
-
-  const totalExpenses = expenses.reduce(
+  const todayExpensesAmount = todayExpenses.reduce(
     (sum: number, e: any) => sum + (Number(e.amount) || 0),
     0
   );
 
-  const totalInflow = cashflows
+  const todayInflow = todayCashflows
     .filter((c: any) => c.type === "inflow")
     .reduce((sum: number, c: any) => sum + (Number(c.amount) || 0), 0);
 
-  const totalOutflow = cashflows
+  const todayOutflow = todayCashflows
     .filter((c: any) => c.type === "outflow")
     .reduce((sum: number, c: any) => sum + (Number(c.amount) || 0), 0);
 
-  const netCashFlow = totalInflow - totalOutflow;
+  const todayNetCashFlow = todayInflow - todayOutflow;
+  const todayNetProfit = todayRepaid - todayExpensesAmount;
+  const todayAvailableCash = todayNetCashFlow + todayNetProfit;
 
-  // Expenses breakdown
-  const operationalExpenses = totalExpenses; // (Sum of Expense model)
-  const manualOutflows = totalOutflow; // (Sum of CashFlow outflow)
-  const totalOutflowsCombined = operationalExpenses + manualOutflows;
-
-  // Net Profit = (Repayments + manual Inflows) - (Operational Expenses + manual Outflows)
-  // Simplified for consistency: Net Profit = Repayments - Operational Expenses
-  const netProfit = totalRepaid - operationalExpenses;
-
-  // Available Liquidity = Net Cash Flow (manual movements) + Repayments - Operational Expenses
-  const availableCash = netCashFlow + netProfit;
-
-  return Response.json({
-    totalLoans,
-    activeLoans,
-    outstandingBalance,
-    totalRepaid,
-    totalExpenses: totalOutflowsCombined, // Map total for the main KPI
-    operationalExpenses,
-    manualOutflows,
-    netProfit,
-    totalInflow,
-    totalOutflow,
-    netCashFlow,
-    availableCash,
+  return NextResponse.json({
+    // Today's metrics
+    todayLoans: todayLoansCount,
+    todayActiveLoans: todayActiveLoans,
+    todayLoanAmount,
+    todayRepaid,
+    todayExpenses: todayExpensesAmount + todayOutflow, // Combined expenses
+    operationalExpenses: todayExpensesAmount,
+    manualOutflows: todayOutflow,
+    todayNetProfit,
+    todayInflow,
+    todayOutflow,
+    todayNetCashFlow,
+    todayAvailableCash,
+    
+    // Keep some totals for reference
+    totalLoans: (await Loan.find({ organization: orgId })).length,
+    totalActiveLoans: (await Loan.find({ organization: orgId, status: { $ne: "paid" } })).length,
+    totalOutstandingBalance: (await Loan.find({ organization: orgId })).reduce(
+      (sum: number, loan: any) => sum + (Number(loan.amountLoaned) || 0), 0
+    ) - (await Repayment.find({ organization: orgId })).reduce(
+      (sum: number, r: any) => sum + (Number(r.amountPaid) || 0), 0
+    )
+  }, {
+    // Add cache control headers to prevent stale data
+    headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate, s-maxage=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    }
   });
 }
